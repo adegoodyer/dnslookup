@@ -1,29 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"os"
-	"strings"
 
-	"github.com/adegoodyer/dnslookup/internal/lookups"
+	"github.com/adegoodyer/dnslookup/internal/resolver"
 	"github.com/adegoodyer/dnslookup/internal/utils"
 )
 
 func main() {
+	// ensure domain/IP is provided
 	if len(os.Args) < 2 {
-		fmt.Printf("Usage: %s <domain|IP>\n", os.Args[0])
+		utils.PrintUsage(os.Args[0])
 		os.Exit(1)
 	}
 
-	input := strings.TrimSpace(os.Args[1])
+	// sanitize input
+	input := utils.CleanInput(os.Args[1])
 
-	// validate input
+	// check input is an IP address
+	// perform relevant logic based on result
 	if utils.IsIP(input) {
-		lookups.PerformReverseLookup(input)
-	} else if utils.IsValidDomain(input) {
-		lookups.PerformDNSLookups(input)
+		resolver.PerformReverseLookup(&resolver.DefaultResolver{}, input)
 	} else {
-		fmt.Println("Invalid input. Provide a valid IP or domain.")
-		os.Exit(1)
+		resolver.PerformDNSLookups(&resolver.DefaultResolver{}, input)
 	}
 }
