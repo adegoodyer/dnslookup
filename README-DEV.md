@@ -52,6 +52,13 @@ go test ./... -v
 # run
 go run cmd/$PROJECT_NAME/main.go
 
+# git tags
+export PROJECT_VERSION=v0.0.1 && \
+git tag -a $PROJECT_VERSION -m "Release version {$PROJECT_VERSION}" && \
+git push origin $PROJECT_VERSION && \
+git tag -a latest -m "Latest release" && \
+git push origin latest
+
 # build binary
 go build -o bin/dnslookup ./cmd/dnslookup
 ```
