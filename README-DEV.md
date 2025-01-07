@@ -38,12 +38,20 @@ go mod init github.com/adegoodyer/$PROJECT_NAME
 mkdir -p bin cmd/$PROJECT_NAME internal && \
 touch cmd/$PROJECT_NAME/main.go
 
+# get dependencies
+go get github.com/stretchr/testify/mock
+go get github.com/stretchr/testify/assert
+
 # tidy package dependencies
 go mod tidy
 
 # test
 go test ./...
+go test ./... -v
 
 # run
 go run cmd/$PROJECT_NAME/main.go
+
+# build binary
+go build -o bin/dnslookup ./cmd/dnslookup
 ```
