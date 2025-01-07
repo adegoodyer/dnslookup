@@ -21,15 +21,15 @@ func main() {
 	if net.ParseIP(input) != nil {
 		performReverseLookup(input)
 	} else {
-		// @TODO - check is domain in in right format (no https etc)
+		// @TODO - check is domain in right format (no https etc)
 		performDNSLookups(input)
 	}
 }
 
 func performReverseLookup(ip string) {
-	fmt.Printf("\nReverse DNS Lookup for IP: %s\n", ip)
-	// @TODO - improve so line is length of title string
-	fmt.Println(strings.Repeat("=", 50))
+	header := fmt.Sprintf("Reverse DNS Lookup Results for IP: %s", ip)
+	fmt.Println("\n" + header)
+	fmt.Println(strings.Repeat("=", len(header)))
 
 	hostnames, err := net.LookupAddr(ip)
 	if err != nil {
@@ -43,9 +43,9 @@ func performReverseLookup(ip string) {
 }
 
 func performDNSLookups(domain string) {
-	fmt.Printf("\nDNS Lookup Results for: %s\n", domain)
-	// @TODO - improve so line is length of title string
-	fmt.Println(strings.Repeat("=", 40))
+	header := fmt.Sprintf("DNS Lookup Results for: %s", domain)
+	fmt.Println("\n" + header)
+	fmt.Println(strings.Repeat("=", len(header)))
 
 	lookupA(domain)
 	lookupAAAA(domain)
