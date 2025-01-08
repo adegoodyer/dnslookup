@@ -38,16 +38,17 @@ go mod init github.com/adegoodyer/$PROJECT_NAME
 mkdir -p bin cmd/$PROJECT_NAME internal && \
 touch cmd/$PROJECT_NAME/main.go
 
+# add .gitignore
+# https://www.toptal.com/developers/gitignore/api/go
+
 # get dependencies
 go get github.com/stretchr/testify/mock
 go get github.com/stretchr/testify/assert
+go get github.com/miekg/dns
+go get github.com/domainr/whois
 
 # tidy package dependencies
 go mod tidy
-
-# test
-go test ./...
-go test ./... -v
 
 # run
 go run cmd/$PROJECT_NAME/main.go
