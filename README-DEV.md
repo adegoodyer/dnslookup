@@ -54,8 +54,12 @@ go mod tidy
 go run cmd/$PROJECT_NAME/main.go
 
 # git tags
-export PROJECT_VERSION=v0.0.1 && \
-git tag -a $PROJECT_VERSION -m "Release version {$PROJECT_VERSION}" && \
+# removes existing latest tag if it exists
+# then creates new release version and latest tag
+export PROJECT_VERSION=v0.0.2 && \
+git tag -d latest 2>/dev/null && \
+git push origin --delete latest 2>/dev/null || true && \
+git tag -a $PROJECT_VERSION -m "Release version $PROJECT_VERSION" && \
 git push origin $PROJECT_VERSION && \
 git tag -a latest -m "Latest release" && \
 git push origin latest
