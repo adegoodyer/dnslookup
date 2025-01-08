@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -16,6 +17,8 @@ func PerformDNSLookups(resolver Resolver, domain string) {
 	lookupMX(resolver, domain)
 	lookupNS(resolver, domain)
 	lookupTXT(resolver, domain)
+	lookupSOA(resolver, domain)
+	lookupWHOIS(resolver, domain)
 }
 
 func lookupA(resolver Resolver, domain string) {
@@ -96,4 +99,26 @@ func lookupTXT(resolver Resolver, domain string) {
 	for _, txt := range txtRecords {
 		fmt.Printf("- %s\n", txt)
 	}
+}
+
+func lookupSOA(r Resolver, domain string) {
+	soaRecords, err := r.LookupSOA(domain)
+	if err != nil {
+		log.Printf("SOA Record lookup failed: %v\n", err)
+		return
+	}
+	fmt.Println("\nSOA Record:")
+	for _, line := range soaRecords {
+		fmt.Println(line)
+	}
+}
+
+func lookupWHOIS(r Resolver, domain string) {
+	whoisInfo, err := r.LookupWHOIS(domain)
+	if err != nil {
+		log.Printf("WHOIS lookup failed: %v\n", err)
+		return
+	}
+	fmt.Println("\nWHOIS Information:")
+	fmt.Println(whoisInfo)
 }
