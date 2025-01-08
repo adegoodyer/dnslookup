@@ -7,138 +7,115 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Test mock resolver's LookupAddr method
-func TestMockResolver_LookupAddr(t *testing.T) {
+func TestLookupAddr(t *testing.T) {
+	// creates new instance and pointer to it
 	mockResolver := &MockResolver{
+		// function assigned to field, overriding default behaviour for the test
 		MockLookupAddr: func(ip string) ([]string, error) {
-			if ip == "127.0.0.1" {
-				return []string{"mock.hostname.com"}, nil
-			}
-			return nil, nil
+			return []string{"mock.hostname.com"}, nil
 		},
 	}
 
-	// Test with a valid IP
+	// perform test
 	hostnames, err := mockResolver.LookupAddr("127.0.0.1")
 	assert.Nil(t, err)
 	assert.Equal(t, []string{"mock.hostname.com"}, hostnames)
-
-	// Test with an invalid IP
-	hostnames, err = mockResolver.LookupAddr("192.168.1.1")
-	assert.Nil(t, err)
-	assert.Empty(t, hostnames)
 }
 
-// Test mock resolver's LookupIP method
-func TestMockResolver_LookupIP(t *testing.T) {
+// pattern remains same for remaining tests..
+
+func TestLookupIP(t *testing.T) {
 	mockResolver := &MockResolver{
 		MockLookupIP: func(host string) ([]net.IP, error) {
-			if host == "example.com" {
-				return []net.IP{net.ParseIP("8.8.8.8")}, nil
-			}
-			return nil, nil
+			return []net.IP{net.ParseIP("8.8.8.8")}, nil
 		},
 	}
 
-	// Test with a valid domain
 	ips, err := mockResolver.LookupIP("example.com")
 	assert.Nil(t, err)
-	assert.Equal(t, net.ParseIP("8.8.8.8"), ips[0])
-
-	// Test with an invalid domain
-	ips, err = mockResolver.LookupIP("nonexistentdomain.com")
-	assert.Nil(t, err)
-	assert.Empty(t, ips)
+	assert.Len(t, ips, 1)
+	assert.Equal(t, "8.8.8.8", ips[0].String())
 }
 
-// Test mock resolver's LookupCNAME method
-func TestMockResolver_LookupCNAME(t *testing.T) {
+func TestLookupCNAME(t *testing.T) {
 	mockResolver := &MockResolver{
 		MockLookupCNAME: func(host string) (string, error) {
-			if host == "example.com" {
-				return "cname.example.com", nil
-			}
-			return "", nil
+			return "mock.cname.com", nil
 		},
 	}
 
-	// Test with a valid domain
 	cname, err := mockResolver.LookupCNAME("example.com")
 	assert.Nil(t, err)
-	assert.Equal(t, "cname.example.com", cname)
-
-	// Test with an invalid domain
-	cname, err = mockResolver.LookupCNAME("nonexistentdomain.com")
-	assert.Nil(t, err)
-	assert.Empty(t, cname)
+	assert.Equal(t, "mock.cname.com", cname)
 }
 
-// Test mock resolver's LookupMX method
-func TestMockResolver_LookupMX(t *testing.T) {
+func TestLookupMX(t *testing.T) {
 	mockResolver := &MockResolver{
 		MockLookupMX: func(host string) ([]*net.MX, error) {
-			if host == "example.com" {
-				return []*net.MX{
-					{Host: "mail.example.com", Pref: 10},
-				}, nil
-			}
-			return nil, nil
+			return []*net.MX{
+				{Host: "mail.example.com", Pref: 10},
+			}, nil
 		},
 	}
 
-	// Test with a valid domain
 	mxRecords, err := mockResolver.LookupMX("example.com")
 	assert.Nil(t, err)
+	assert.Len(t, mxRecords, 1)
 	assert.Equal(t, "mail.example.com", mxRecords[0].Host)
-
-	// Test with an invalid domain
-	mxRecords, err = mockResolver.LookupMX("nonexistentdomain.com")
-	assert.Nil(t, err)
-	assert.Empty(t, mxRecords)
+	assert.Equal(t, uint16(10), mxRecords[0].Pref)
 }
 
-// Test mock resolver's LookupNS method
-func TestMockResolver_LookupNS(t *testing.T) {
+func TestLookupNS(t *testing.T) {
 	mockResolver := &MockResolver{
 		MockLookupNS: func(host string) ([]*net.NS, error) {
-			if host == "example.com" {
-				return []*net.NS{
-					{Host: "ns1.example.com"},
-				}, nil
-			}
-			return nil, nil
+			return []*net.NS{
+				{Host: "ns.example.com"},
+			}, nil
 		},
 	}
 
-	// Test with a valid domain
 	nsRecords, err := mockResolver.LookupNS("example.com")
 	assert.Nil(t, err)
-	assert.Equal(t, "ns1.example.com", nsRecords[0].Host)
-
-	// Test with an invalid domain
-	nsRecords, err = mockResolver.LookupNS("nonexistentdomain.com")
-	assert.Nil(t, err)
-	assert.Empty(t, nsRecords)
+	assert.Len(t, nsRecords, 1)
+	assert.Equal(t, "ns.example.com", nsRecords[0].Host)
 }
 
-// Test mock resolver's LookupTXT method
-func TestMockResolver_LookupTXT(t *testing.T) {
+func TestLookupTXT(t *testing.T) {
 	mockResolver := &MockResolver{
 		MockLookupTXT: func(host string) ([]string, error) {
-			if host == "example.com" {
-				return []string{"v=spf1 include:_spf.example.com ~all"}, nil
-			}
-			return nil, nil
+			return []string{"v=spf1 include:_spf.example.com ~all"}, nil
 		},
 	}
 
-	// Test with a valid domain
 	txtRecords, err := mockResolver.LookupTXT("example.com")
 	assert.Nil(t, err)
+	assert.Len(t, txtRecords, 1)
 	assert.Equal(t, "v=spf1 include:_spf.example.com ~all", txtRecords[0])
+}
 
-	// Test with an invalid domain
-	txtRecords, err = mockResolver.LookupTXT("nonexistentdomain.com")
+func TestLookupSOA(t *testing.T) {
+	mockResolver := &MockResolver{}
+
+	// Test SOA lookup
+	soaRecords, err := mockResolver.LookupSOA("example.com")
 	assert.Nil(t, err)
-	assert.Empty(t, txtRecords)
+	assert.Equal(t, []string{
+		"Master Name Server: sns.dns.icann.org",
+		"Responsible Email: noc.dns.icann.org",
+		"Serial: 2020123456",
+		"Refresh: 7200 seconds",
+		"Retry: 3600 seconds",
+		"Expire: 1209600 seconds",
+		"Minimum TTL: 3600 seconds",
+	}, soaRecords)
+}
+
+func TestLookupWHOIS(t *testing.T) {
+	mockResolver := &MockResolver{}
+
+	// Test WHOIS lookup
+	whoisInfo, err := mockResolver.LookupWHOIS("example.com")
+	assert.Nil(t, err)
+	assert.Contains(t, whoisInfo, "Domain Name: EXAMPLE.COM")
+	assert.Contains(t, whoisInfo, "Registrar WHOIS Server: whois.iana.org")
 }
