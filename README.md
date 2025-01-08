@@ -8,7 +8,7 @@ DNS Lookup CLI tool implemented in Go
 ## Install
 
 ```bash
-go install github.com/adegoodyer/dnslookup@latest
+go install github.com/adegoodyer/dnslookup/cmd/dnslookup@latest
 ```
 
 ## Usage
