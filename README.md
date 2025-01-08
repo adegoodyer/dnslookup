@@ -26,6 +26,8 @@ If a domain is provided, it will perform the following lookups:
  - MX (Mail Exchange) records
  - NS (Name Server) records
  - TXT (Text) records
+ - SOA (Start of Authority) record
+ - WHOIS information for the domain
 
 If an IP address is provided, it will perform reverse DNS lookup and display associated hostnames.
 
